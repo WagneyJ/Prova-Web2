@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Gamer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="topo">
+    <a href="#" class="logo">Portal<span>Gamer</span></a>
+    <nav aria-label="Menu principal">
+      <a href="#produtos">Produtos</a>
+      <a href="#categorias">Categorias</a>
+      <a href="#sobre">Sobre</a>
+    </nav>
+    <button id="tema" type="button">Modo escuro</button>
+  </div>
+</header>
+
+<main>
+  <section class="introducao">
+    <div>
+      <p class="tag">PORTAL GAMER</p>
+      <h1>Loja para os amantes dos games.</h1>
+      <p>Games, tecnologia, Emuladores e novidades dos estúdios em um só lugar.</p>
+    </div>
+    <img src="https://picsum.photos/seed/gamepulse/700/420"
+         alt="Imagem ilustrativa relacionada a videogames">
+  </section>
+
+  <section id="produtos" class="produtos">
+    <div class="titulo">
+      <h2>Veja nosso catálogo!</h2>
+
+      <div id="categorias" class="filtros">
+        <button class="ativo" data-filtro="Todos">Todos</button>
+        <button data-filtro="Games">Games</button>
+        <button data-filtro="Hardware">Hardware</button>
+        <button data-filtro="Emuladores">Emuladores</button>
+        <button data-filtro="Manuais">Manuais</button>
+      </div>
+    </div>
+
+    <div id="lista" class="lista"></div>
+    <button id="mais" class="mais" type="button">Mostrar mais</button>
+    <button id="adicionar" class="adicionar" type="button">Adicionar ao Carrinho</button>
+    <p id="nenhuma" class="nenhuma" hidden>Nenhum produto encontrado.</p>
+  </section>
+
+  <section class="busca">
+    <h2>Procurar produto</h2>
+    <input id="busca" type="search" placeholder="Digite uma palavra...">
+  </section>
+
+  <section class="newsletter">
+    <div>
+      <h2>Ganhe 10% de desconto</h2>
+      <p>PARTICPANDO DO NOSSO CLUBE VOCÊ ADQUIRE UM CUPOM DE BOAS VINDAS!.</p>
+    </div>
+
+    <form id="formulario">
+      <label class="oculto" for="email">E-mail</label>
+      <input id="email" type="email" placeholder="seu@email.com">
+      <button type="submit">Cadastrar</button>
+      <small id="mensagem"></small>
+    </form>
+  </section>
+</main>
+
+<footer id="sobre">
+  <p>© 2026 PortalGamer · Projeto acadêmico</p>
+  <p>Portal criado para fins didáticos.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
