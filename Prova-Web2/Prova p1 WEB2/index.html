@@ -6,7 +6,7 @@
   <title>Portal Gamer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,11 +17,14 @@
     <nav aria-label="Menu principal">
       <a href="#produtos">Produtos</a>
       <a href="#categorias">Categorias</a>
+      <a href="#clube-gamer">Clube Gamer</a>
       <a href="#sobre">Sobre</a>
     </nav>
     <button id="tema" type="button">Modo escuro</button>
-    <button id="abrir-carrinho" type="button">
-      🛒 Carrinho (<span id="contador-carrinho">0</span>)
+    <button id="abrir-carrinho" class="botao-carrinho" type="button" aria-label="Abrir carrinho de compras">
+      <span class="icone-carrinho" aria-hidden="true">🛒</span>
+      <span>Carrinho</span>
+      <span id="contador-carrinho" class="contador-carrinho">0</span>
     </button>
   </div>
 </header>
@@ -35,6 +38,14 @@
     </div>
     <img src="https://picsum.photos/seed/gamepulse/700/420"
          alt="Imagem ilustrativa relacionada a videogames">
+  </section>
+
+  <section class="busca" aria-label="Pesquisa de produtos">
+    <h2>Encontre seu próximo jogo ou acessório</h2>
+    <label class="campo-busca">
+      <span aria-hidden="true">⌕</span>
+      <input id="busca" type="search" placeholder="Buscar jogos, hardware, manuais..." aria-label="Buscar produtos">
+    </label>
   </section>
 
   <section id="produtos" class="produtos">
@@ -55,15 +66,16 @@
     <p id="nenhuma" class="nenhuma" hidden>Nenhum produto encontrado.</p>
   </section>
 
-  <section class="busca">
-    <h2>Procurar produto</h2>
-    <input id="busca" type="search" placeholder="Digite uma palavra...">
-  </section>
 
-  <section class="newsletter">
-    <div>
-      <h2>Ganhe 10% de desconto</h2>
-      <p>PARTICPANDO DO NOSSO CLUBE VOCÊ ADQUIRE UM CUPOM DE BOAS VINDAS!.</p>
+  <section id="clube-gamer" class="newsletter">
+    <div class="clube-texto">
+      <p class="clube-etiqueta">PORTAL GAMER EXCLUSIVO</p>
+      <h2>Entre para o Clube Gamer</h2>
+      <p>Cadastre seu e-mail e receba um cupom de boas-vindas com 10% de desconto, novidades e ofertas especiais.</p>
+      <ul class="clube-beneficios">
+        <li>10% de desconto na primeira compra</li>
+        <li>Novidades e ofertas em primeira mão</li>
+      </ul>
     </div>
 
     <form id="formulario">

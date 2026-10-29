@@ -1,41 +1,43 @@
 
 const produtos = [
-  ["Games", "GTA6", "399,00", "https://picsum.photos/seed/rpg/600/350"],
-  ["Hardware", "Monitor 29' Acer", "899,00", "https://picsum.photos/seed/pcgamer/600/350"],
-  ["Emuladores", "Licença emulador Switch 2", "1499,00", "https://picsum.photos/seed/esports2/600/350"],
-  ["Manuais", "Guia todos os achievements de Hollow Knight", "99,00", "https://picsum.photos/seed/indie2/600/350"],
-  ["Games", "Resident Evil 9", "299,00", "https://picsum.photos/seed/gameupdate/600/350"],
-  ["Hardware", "Teclado Mecânico", "399,00", "https://picsum.photos/seed/monitor2/600/350"],
-  ["Emuladores", "Licença emulador PS5", "1799,00", "https://picsum.photos/seed/team/600/350"],
-  ["Manuais", "Guia todos os achievements Minecraft", "29,00", "https://picsum.photos/seed/studio2/600/350"],
-  ["Games", "FIFA 27", "499,00", "https://picsum.photos/seed/access/600/350"],
-  ["Hardware", "Placa de vídeo RTX 7090", "4999,00", "https://picsum.photos/seed/ssd2/600/350"]
+["Games","GTA6","399,00","https://picsum.photos/seed/gta6-game/600/350","4.3"],
+["Hardware","Monitor 29' Acer","899,00","https://picsum.photos/seed/ultrawide-monitor/600/350","4.2"],
+["Emuladores","Licença emulador Switch 2","1499,00","https://picsum.photos/seed/nintendo-console/600/350","3.9"],
+["Manuais","Guia todos os achievements de Hollow Knight","99,00","https://picsum.photos/seed/indie-adventure/600/350","4.7"],
+["Games","Resident Evil 9","299,00","https://picsum.photos/seed/survival-horror/600/350","3.7"],
+["Hardware","Teclado Mecânico","399,00","https://picsum.photos/seed/mechanical-keyboard/600/350","4.1"],
+["Emuladores","Licença emulador PS5","1799,00","https://picsum.photos/seed/playstation-console/600/350","4.4"],
+["Manuais","Guia todos os achievements Minecraft","29,00","https://picsum.photos/seed/minecraft-blocks/600/350","4.8"],
+["Games","FIFA 27","499,00","https://picsum.photos/seed/football-stadium/600/350","4.6"],
+["Hardware","Placa de vídeo RTX 7090","4999,00","https://picsum.photos/seed/graphics-card/600/350","4.9"]
 ];
 
-const lista = document.querySelector("#lista");
+
+const selecionar = seletor => document.querySelector(seletor);
+const CHAVE_ARMAZENAMENTO = "portalGamerCarrinho";
+
+const lista = selecionar("#lista");
 const botoes = document.querySelectorAll(".filtros button");
-const campoBusca = document.querySelector("#busca");
-const botaoMais = document.querySelector("#mais");
-const nenhuma = document.querySelector("#nenhuma");
+const campoBusca = selecionar("#busca");
+const botaoMais = selecionar("#mais");
+const nenhuma = selecionar("#nenhuma");
+const botaoTema = selecionar("#tema");
+const formulario = selecionar("#formulario");
 
-const botaoTema = document.querySelector("#tema");
-const formulario = document.querySelector("#formulario");
-
-const botaoAbrirCarrinho = document.querySelector("#abrir-carrinho");
-const botaoFecharCarrinho = document.querySelector("#fechar-carrinho");
-const contadorCarrinho = document.querySelector("#contador-carrinho");
-const areaCarrinho = document.querySelector("#carrinho");
-const itensCarrinho = document.querySelector("#itens-carrinho");
-const subtotalCarrinho = document.querySelector("#subtotal-carrinho");
-const botaoLimparCarrinho = document.querySelector("#limpar-carrinho");
-const botaoFinalizarCompra = document.querySelector("#finalizar-compra");
-const mensagemCarrinho = document.querySelector("#mensagem-carrinho");
-const fundoCarrinho = document.querySelector("#fundo-carrinho");
+const botaoAbrirCarrinho = selecionar("#abrir-carrinho");
+const botaoFecharCarrinho = selecionar("#fechar-carrinho");
+const contadorCarrinho = selecionar("#contador-carrinho");
+const areaCarrinho = selecionar("#carrinho");
+const itensCarrinho = selecionar("#itens-carrinho");
+const subtotalCarrinho = selecionar("#subtotal-carrinho");
+const botaoLimparCarrinho = selecionar("#limpar-carrinho");
+const botaoFinalizarCompra = selecionar("#finalizar-compra");
+const mensagemCarrinho = selecionar("#mensagem-carrinho");
+const fundoCarrinho = selecionar("#fundo-carrinho");
 
 let filtro = "Todos";
 let quantidade = 6;
-
-const CHAVE_ARMAZENAMENTO = "portalGamerCarrinho";
+let carrinho = carregarCarrinho();
 
 function carregarCarrinho() {
   try {
@@ -59,8 +61,6 @@ function carregarCarrinho() {
   }
 }
 
-let carrinho = carregarCarrinho();
-
 function salvarCarrinho() {
   try {
     localStorage.setItem(
@@ -80,110 +80,108 @@ function formatarPreco(valor) {
   });
 }
 
+function precoProduto(produto) {
+  return Number(produto[2].replace(",", "."));
+}
+
+function totalCarrinho() {
+  return carrinho.reduce(
+    (total, item) => total + item.preco * item.quantidade,
+    0
+  );
+}
+
+// Catálogo, filtros e pesquisa
+
 function mostrarProdutos() {
   const texto = campoBusca.value.trim().toLowerCase();
 
   const resultado = produtos
     .map((produto, id) => ({ produto, id }))
-    .filter(({ produto }) => {
-      const categoriaOK =
-        filtro === "Todos" || produto[0] === filtro;
+    .filter(({ produto }) =>
+      (filtro === "Todos" || produto[0] === filtro) &&
+      produto[1].toLowerCase().includes(texto)
+    );
 
-      const buscaOK = produto[1].toLowerCase().includes(texto);
+  lista.innerHTML = resultado.slice(0, quantidade).map(({ produto, id }) => {
+    const estrelas = Math.floor(Number(produto[4]));
 
-      return categoriaOK && buscaOK;
-    });
-
-  lista.innerHTML = resultado
-    .slice(0, quantidade)
-    .map(({ produto, id }) => `
+    return `
       <article class="card">
         <img
           src="${produto[3]}"
           alt="Imagem do produto ${produto[1]}"
           loading="lazy"
         >
-
         <div class="card-conteudo">
-          <small>${produto[0]}</small>
+          <span class="categoria-produto categoria-${produto[0].toLowerCase()}">
+            ${produto[0]}
+          </span>
           <h3>${produto[1]}</h3>
-          <p>Por ${formatarPreco(
-            Number(produto[2].replace(",", "."))
-          )}</p>
-
-          <button
-            class="adicionar-produto"
-            type="button"
-            data-id="${id}"
-          >
-            🛒 Adicionar ao carrinho
+          <div class="avaliacao" aria-label="Avaliação ${produto[4]} de 5 estrelas">
+            <span class="estrelas" aria-hidden="true">
+              ${"★".repeat(estrelas)}${"☆".repeat(5 - estrelas)}
+            </span>
+            <span>${produto[4]} / 5</span>
+          </div>
+          <p class="preco-produto">
+            ${formatarPreco(precoProduto(produto))}
+          </p>
+          <button class="adicionar-produto" type="button" data-id="${id}">
+            <span aria-hidden="true">🛒</span>
+            Adicionar ao carrinho
           </button>
         </div>
-      </article>
-    `)
-    .join("");
+      </article>`;
+  }).join("");
 
   nenhuma.hidden = resultado.length > 0;
   botaoMais.hidden = quantidade >= resultado.length;
 }
 
-// Filtros por categoria
 botoes.forEach(botao => {
   botao.addEventListener("click", () => {
-    botoes.forEach(b => b.classList.remove("ativo"));
-
+    botoes.forEach(item => item.classList.remove("ativo"));
     botao.classList.add("ativo");
+
     filtro = botao.dataset.filtro;
     quantidade = 6;
-
     mostrarProdutos();
   });
 });
 
-// Busca de produtos
 campoBusca.addEventListener("input", () => {
   quantidade = 6;
   mostrarProdutos();
 });
 
-// Mostrar mais produtos
 botaoMais.addEventListener("click", () => {
   quantidade += 3;
   mostrarProdutos();
 });
 
-// Adicionar produtos ao carrinho usando delegação de eventos
+// Adição e atualização do carrinho
+
 lista.addEventListener("click", event => {
   const botao = event.target.closest(".adicionar-produto");
-
   if (!botao) return;
 
   const id = Number(botao.dataset.id);
   const produto = produtos[id];
-
   if (!produto) return;
-
-  const preco = Number(produto[2].replace(",", "."));
 
   const existente = carrinho.find(item => item.id === id);
 
   if (existente) {
-    carrinho = carrinho.map(item =>
-      item.id === id
-        ? { ...item, quantidade: item.quantidade + 1 }
-        : item
-    );
+    existente.quantidade++;
   } else {
-    carrinho = [
-      ...carrinho,
-      {
-        id,
-        nome: produto[1],
-        preco,
-        imagem: produto[3],
-        quantidade: 1
-      }
-    ];
+    carrinho.push({
+      id,
+      nome: produto[1],
+      preco: precoProduto(produto),
+      imagem: produto[3],
+      quantidade: 1
+    });
   }
 
   mensagemCarrinho.textContent =
@@ -194,102 +192,73 @@ lista.addEventListener("click", event => {
   abrirCarrinho();
 });
 
-// Atualizar contador, itens e subtotal
 function atualizarCarrinho() {
-  const totalItens = carrinho.reduce(
+  contadorCarrinho.textContent = carrinho.reduce(
     (total, item) => total + item.quantidade,
     0
   );
 
-  const subtotal = carrinho.reduce(
-    (total, item) => total + item.preco * item.quantidade,
-    0
-  );
-
-  contadorCarrinho.textContent = totalItens;
-  subtotalCarrinho.textContent = formatarPreco(subtotal);
+  subtotalCarrinho.textContent = formatarPreco(totalCarrinho());
+  botaoFinalizarCompra.disabled = carrinho.length === 0;
 
   if (carrinho.length === 0) {
     itensCarrinho.innerHTML = "<p>Seu carrinho está vazio.</p>";
-    botaoFinalizarCompra.disabled = true;
-  } else {
-    botaoFinalizarCompra.disabled = false;
+    return;
+  }
 
-    itensCarrinho.innerHTML = carrinho.map(item => `
-      <article class="item-carrinho">
-        <img
-          src="${item.imagem}"
-          alt=""
-          width="80"
-          loading="lazy"
-        >
-
-        <div class="item-info">
-          <h3>${item.nome}</h3>
-          <p>${formatarPreco(item.preco)} cada</p>
-
-          <div class="quantidade-controles">
-            <button
-              type="button"
-              data-acao="diminuir"
-              data-id="${item.id}"
-              aria-label="Diminuir quantidade de ${item.nome}"
-            >−</button>
-
-            <span>${item.quantidade}</span>
-
-            <button
-              type="button"
-              data-acao="aumentar"
-              data-id="${item.id}"
-              aria-label="Aumentar quantidade de ${item.nome}"
-            >+</button>
-          </div>
-
-          <p>
-            Total: <strong>${formatarPreco(
-              item.preco * item.quantidade
-            )}</strong>
-          </p>
-
+  itensCarrinho.innerHTML = carrinho.map(item => `
+    <article class="item-carrinho">
+      <img src="${item.imagem}" alt="" width="80" loading="lazy">
+      <div class="item-info">
+        <h3>${item.nome}</h3>
+        <p>${formatarPreco(item.preco)} cada</p>
+        <div class="quantidade-controles">
           <button
             type="button"
-            data-acao="remover"
+            data-acao="diminuir"
             data-id="${item.id}"
-            class="botao-remover"
-          >
-            🗑 Remover
-          </button>
+            aria-label="Diminuir quantidade de ${item.nome}"
+          >−</button>
+          <span>${item.quantidade}</span>
+          <button
+            type="button"
+            data-acao="aumentar"
+            data-id="${item.id}"
+            aria-label="Aumentar quantidade de ${item.nome}"
+          >+</button>
         </div>
-      </article>
-    `).join("");
-  }
+        <p>
+          Total:
+          <strong>${formatarPreco(item.preco * item.quantidade)}</strong>
+        </p>
+        <button
+          type="button"
+          data-acao="remover"
+          data-id="${item.id}"
+          class="botao-remover"
+        >🗑 Remover</button>
+      </div>
+    </article>`).join("");
 }
 
-// Aumentar, diminuir ou remover itens
 itensCarrinho.addEventListener("click", event => {
   const botao = event.target.closest("button[data-acao]");
-
   if (!botao) return;
 
   const id = Number(botao.dataset.id);
-  const acao = botao.dataset.acao;
+  const item = carrinho.find(produto => produto.id === id);
+  if (!item) return;
 
-  if (acao === "remover") {
-    carrinho = carrinho.filter(item => item.id !== id);
+  if (botao.dataset.acao === "remover") {
+    carrinho = carrinho.filter(produto => produto.id !== id);
+  } else if (botao.dataset.acao === "aumentar") {
+    item.quantidade++;
   } else {
-    carrinho = carrinho
-      .map(item => {
-        if (item.id !== id) return item;
+    item.quantidade--;
 
-        const novaQuantidade =
-          acao === "aumentar"
-            ? item.quantidade + 1
-            : item.quantidade - 1;
-
-        return { ...item, quantidade: novaQuantidade };
-      })
-      .filter(item => item.quantidade > 0);
+    if (item.quantidade <= 0) {
+      carrinho = carrinho.filter(produto => produto.id !== id);
+    }
   }
 
   mensagemCarrinho.textContent = "";
@@ -297,15 +266,13 @@ itensCarrinho.addEventListener("click", event => {
   atualizarCarrinho();
 });
 
+// Abertura e fechamento do carrinho
 
 function abrirCarrinho() {
   fundoCarrinho.hidden = false;
-
   areaCarrinho.inert = false;
   areaCarrinho.setAttribute("aria-hidden", "false");
 
-  // Permite que o navegador registre o estado inicial
-  // antes de aplicar a animação de entrada.
   requestAnimationFrame(() => {
     areaCarrinho.classList.add("aberto");
   });
@@ -318,28 +285,25 @@ function fecharCarrinho() {
   areaCarrinho.classList.remove("aberto");
   areaCarrinho.setAttribute("aria-hidden", "true");
   areaCarrinho.inert = true;
-
   fundoCarrinho.hidden = true;
-  document.body.style.overflow = "";
 
+  document.body.style.overflow = "";
   botaoAbrirCarrinho.focus();
 }
 
 botaoAbrirCarrinho.addEventListener("click", abrirCarrinho);
 botaoFecharCarrinho.addEventListener("click", fecharCarrinho);
-
-// Fecha ao clicar fora do painel
 fundoCarrinho.addEventListener("click", fecharCarrinho);
 
-// Fecha com a tecla Escape
 document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && areaCarrinho.classList.contains("aberto")) {
+  if (
+    event.key === "Escape" &&
+    areaCarrinho.classList.contains("aberto")
+  ) {
     fecharCarrinho();
   }
 });
 
-
-// Limpar todos os itens
 botaoLimparCarrinho.addEventListener("click", () => {
   carrinho = [];
   mensagemCarrinho.textContent = "Carrinho esvaziado.";
@@ -348,23 +312,16 @@ botaoLimparCarrinho.addEventListener("click", () => {
   atualizarCarrinho();
 });
 
-// Finalização demonstrativa
 botaoFinalizarCompra.addEventListener("click", () => {
   if (carrinho.length === 0) return;
 
-  const total = carrinho.reduce(
-    (soma, item) => soma + item.preco * item.quantidade,
-    0
-  );
-
   mensagemCarrinho.textContent =
-    `Pedido demonstrativo: ${formatarPreco(total)}. ` +
+    `Pedido demonstrativo: ${formatarPreco(totalCarrinho())}. ` +
     "Para receber pagamentos, configure um checkout.";
-
-  // Não limpamos o carrinho, pois nenhum pagamento foi realizado.
 });
 
-// Modo escuro
+// Tema claro e escuro
+
 botaoTema.addEventListener("click", event => {
   document.body.classList.toggle("escuro");
 
@@ -375,11 +332,12 @@ botaoTema.addEventListener("click", event => {
 });
 
 // Cadastro da newsletter
+
 formulario.addEventListener("submit", event => {
   event.preventDefault();
 
-  const email = document.querySelector("#email").value.trim();
-  const mensagem = document.querySelector("#mensagem");
+  const email = selecionar("#email").value.trim();
+  const mensagem = selecionar("#mensagem");
 
   if (!/^[^ ]+@[^ ]+\.[^ ]+$/.test(email)) {
     mensagem.textContent = "Digite um e-mail válido.";
@@ -390,13 +348,14 @@ formulario.addEventListener("submit", event => {
   formulario.reset();
 });
 
-// Inicialização
+// Inicialização do catálogo e do carrinho
+
 mostrarProdutos();
 atualizarCarrinho();
 
-// Etapa de pagamento
-const secaoPagamento = document.createElement("section");
+// Formulário de pagamento
 
+const secaoPagamento = document.createElement("section");
 secaoPagamento.id = "secao-pagamento";
 secaoPagamento.hidden = true;
 
@@ -405,146 +364,180 @@ secaoPagamento.innerHTML = `
     <h3>💳 Método de pagamento</h3>
     <p>Escolha como deseja pagar seu pedido.</p>
   </div>
-
   <form id="form-pagamento">
     <fieldset class="opcoes-pagamento">
       <legend>Forma de pagamento</legend>
-
       <label class="opcao-pagamento">
-        <input
-          type="radio"
-          name="pagamento"
-          value="Pix"
-          required
-        >
+        <input type="radio" name="pagamento" value="Pix" required>
         <span>📱 Pix</span>
       </label>
-
       <label class="opcao-pagamento">
-        <input
-          type="radio"
-          name="pagamento"
-          value="Cartão de crédito"
-          required
-        >
+        <input type="radio" name="pagamento" value="Cartão de crédito" required>
         <span>💳 Cartão de crédito</span>
       </label>
-
       <label class="opcao-pagamento">
-        <input
-          type="radio"
-          name="pagamento"
-          value="Boleto bancário"
-          required
-        >
+        <input type="radio" name="pagamento" value="Boleto bancário" required>
         <span>🧾 Boleto bancário</span>
       </label>
     </fieldset>
-
     <div id="resumo-pagamento"></div>
-
+    <div id="pix-area" hidden aria-live="polite">
+      <div class="pix-modal" role="dialog" aria-modal="true" aria-labelledby="pix-titulo">
+        <h4 id="pix-titulo">Pagamento via Pix</h4>
+        <p>QR Code demonstrativo gerado pela API.</p>
+        <img id="pix-qrcode" alt="QR Code demonstrativo para pagamento via Pix">
+        <p>
+          Confirmação do pedido em
+          <strong id="pix-contagem">5</strong> segundos.
+        </p>
+        <p class="pix-aviso">
+          Este QR Code é apenas uma simulação e não recebe pagamentos reais.
+        </p>
+      </div>
+    </div>
     <p class="aviso-pagamento">
       Checkout demonstrativo. Nenhum pagamento real será efetuado.
     </p>
-
     <button type="submit" id="confirmar-pedido">
       Confirmar pedido demonstrativo
     </button>
-
     <button type="button" id="voltar-carrinho">
       Voltar ao carrinho
     </button>
-  </form>
-`;
+  </form>`;
 
-botaoFinalizarCompra.insertAdjacentElement(
-  "beforebegin",
-  secaoPagamento
-);
+botaoFinalizarCompra.insertAdjacentElement("beforebegin", secaoPagamento);
 
-// Abrir a etapa de pagamento
 botaoFinalizarCompra.addEventListener("click", () => {
   if (carrinho.length === 0) return;
 
-  document.querySelector("#resumo-pagamento").textContent =
-    "Total do pedido: " +
-    formatarPreco(
-      carrinho.reduce(
-        (total, item) => total + item.preco * item.quantidade,
-        0
-      )
-    );
+  selecionar("#resumo-pagamento").textContent =
+    `Total do pedido: ${formatarPreco(totalCarrinho())}`;
 
   secaoPagamento.hidden = false;
   botaoFinalizarCompra.hidden = true;
 });
 
-// Voltar para os itens do carrinho
-document.querySelector("#voltar-carrinho").addEventListener(
-  "click",
-  () => {
-    secaoPagamento.hidden = true;
-    botaoFinalizarCompra.hidden = false;
+let pixTimeout = null;
+let pixIntervalo = null;
+
+const formularioPagamento = selecionar("#form-pagamento");
+const areaPix = selecionar("#pix-area");
+const imagemPix = selecionar("#pix-qrcode");
+const contagemPix = selecionar("#pix-contagem");
+const botaoConfirmarPedido = selecionar("#confirmar-pedido");
+
+function cancelarContagemPix() {
+  clearTimeout(pixTimeout);
+  clearInterval(pixIntervalo);
+
+  pixTimeout = null;
+  pixIntervalo = null;
+  areaPix.hidden = true;
+
+  botaoConfirmarPedido.disabled = false;
+  botaoConfirmarPedido.textContent =
+    "Confirmar pedido demonstrativo";
+}
+
+selecionar("#voltar-carrinho").addEventListener("click", () => {
+  cancelarContagemPix();
+
+  secaoPagamento.hidden = true;
+  botaoFinalizarCompra.hidden = false;
+});
+
+// Confirmação do pedido e simulação de pagamento
+
+function concluirPedido(metodo) {
+  if (carrinho.length === 0) return;
+
+  cancelarContagemPix();
+
+  const pedido = {
+    itens: carrinho.map(item => ({ ...item })),
+    total: totalCarrinho(),
+    metodoPagamento: metodo,
+    data: new Date().toISOString()
+  };
+
+  console.log("Pedido demonstrativo:", pedido);
+
+  selecionar("#popup-total").textContent =
+    `Total: ${formatarPreco(pedido.total)}`;
+
+  selecionar("#popup-metodo").textContent =
+    `Pagamento: ${pedido.metodoPagamento}`;
+
+  selecionar("#popup-mensagem").textContent =
+    metodo === "Pix"
+      ? "Pedido demonstrativo confirmado após a exibição do QR Code. Nenhum pagamento real foi realizado."
+      : "Seu pedido demonstrativo foi registrado com sucesso!";
+
+  carrinho = [];
+  salvarCarrinho();
+  atualizarCarrinho();
+
+  secaoPagamento.hidden = true;
+  botaoFinalizarCompra.hidden = false;
+  formularioPagamento.reset();
+
+  fecharCarrinho();
+
+  const popup = selecionar("#popup-compra");
+  popup.hidden = false;
+  selecionar("#fechar-popup").focus();
+}
+
+function mostrarQRCodePix() {
+  const conteudoPix =
+    `PORTAL GAMER - PIX DEMONSTRATIVO - TOTAL ${totalCarrinho().toFixed(2)}`;
+
+  imagemPix.src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=" +
+    encodeURIComponent(conteudoPix);
+
+  areaPix.hidden = false;
+  botaoConfirmarPedido.disabled = true;
+  botaoConfirmarPedido.textContent = "Aguardando confirmação...";
+
+  let segundos = 5;
+  contagemPix.textContent = segundos;
+
+  pixIntervalo = setInterval(() => {
+    contagemPix.textContent = --segundos;
+
+    if (segundos <= 0) {
+      clearInterval(pixIntervalo);
+    }
+  }, 1000);
+
+  pixTimeout = setTimeout(() => concluirPedido("Pix"), 5000);
+}
+
+formularioPagamento
+  .querySelectorAll('input[name="pagamento"]')
+  .forEach(opcao => {
+    opcao.addEventListener("change", cancelarContagemPix);
+  });
+
+formularioPagamento.addEventListener("submit", event => {
+  event.preventDefault();
+
+  const metodo = new FormData(formularioPagamento).get("pagamento");
+  if (!metodo || carrinho.length === 0) return;
+
+  if (metodo === "Pix") {
+    mostrarQRCodePix();
+  } else {
+    concluirPedido(metodo);
   }
-);
+});
 
-// Confirmar o pedido demonstrativo
-document.querySelector("#form-pagamento").addEventListener(
-  "submit",
-  event => {
-    event.preventDefault();
+// Popup de confirmação da compra
 
-    if (carrinho.length === 0) return;
-
-    const formularioPagamento = event.currentTarget;
-    const dados = new FormData(formularioPagamento);
-    const metodo = dados.get("pagamento");
-
-    if (!metodo) return;
-
-    const pedido = {
-      itens: carrinho.map(item => ({ ...item })),
-      total: carrinho.reduce(
-        (total, item) => total + item.preco * item.quantidade,
-        0
-      ),
-      metodoPagamento: metodo,
-      data: new Date().toISOString()
-    };
-
-   // Confirmação demonstrativa
-console.log("Pedido demonstrativo:", pedido);
-
-// Preparar as informações do pop-up antes de limpar o carrinho
-document.querySelector("#popup-total").textContent =
-  "Total: " + formatarPreco(pedido.total);
-
-document.querySelector("#popup-metodo").textContent =
-  "Pagamento: " + pedido.metodoPagamento;
-
-document.querySelector("#popup-mensagem").textContent =
-  "Seu pedido demonstrativo foi registrado com sucesso!";
-
-// Limpar o carrinho
-carrinho = [];
-salvarCarrinho();
-atualizarCarrinho();
-
-secaoPagamento.hidden = true;
-botaoFinalizarCompra.hidden = false;
-formularioPagamento.reset();
-
-// Fechar o painel do carrinho e exibir o pop-up
-fecharCarrinho();
-
-const popupCompra = document.querySelector("#popup-compra");
-popupCompra.hidden = false;
-
-document.querySelector("#fechar-popup").focus();
-  }
-
-const popupCompra = document.querySelector("#popup-compra");
-const botaoFecharPopup = document.querySelector("#fechar-popup");
+const popupCompra = selecionar("#popup-compra");
+const botaoFecharPopup = selecionar("#fechar-popup");
 
 function fecharPopupCompra() {
   popupCompra.hidden = true;
@@ -553,14 +546,12 @@ function fecharPopupCompra() {
 
 botaoFecharPopup.addEventListener("click", fecharPopupCompra);
 
-// Fechar ao clicar no fundo escuro
 popupCompra.addEventListener("click", event => {
   if (event.target === popupCompra) {
     fecharPopupCompra();
   }
 });
 
-// Fechar com Escape
 document.addEventListener("keydown", event => {
   if (event.key === "Escape" && !popupCompra.hidden) {
     fecharPopupCompra();
